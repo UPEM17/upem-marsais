@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getMinutes } from '@/lib/content';
+import { getMinutes } from '../../lib/content';
 
 export const metadata = { title: 'Compte rendu – UPEM' };
 
