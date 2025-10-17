@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getPosts } from '@/lib/content';
+import { getPosts } from '../../lib/content';
 
 export const metadata = { title: 'Actualités – UPEM' };
 
