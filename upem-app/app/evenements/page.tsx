@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getEvents } from '@/lib/content';
+import { getEvents } from '../../lib/content';
 
 export const metadata = { title: 'Événements – UPEM' };
 
