@@ -28,7 +28,9 @@ export default function RootLayout({children}:{children:React.ReactNode}){
           </nav>
         </header>
         <main className="container">{children}</main>
-        <footer className="container footer">© {new Date().getFullYear()} UPEM – Association de parents d'élèves</footer>
+        <footer className="container footer">
+          © {new Date().getFullYear()} UPEM – Association de parents d'élèves
+        </footer>
         <script dangerouslySetInnerHTML={{__html:`if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}`}} />
       </body>
     </html>
