@@ -1,0 +1,57 @@
+backend:
+  name: github
+  repo: UPEM17/upem-marsais   # ← ton dépôt GitHub
+  branch: main
+  base_url: /api/auth
+  auth_endpoint: login
+
+media_folder: "public/uploads"    # où sont rangés les fichiers dans le repo
+public_folder: "/uploads"         # comment le site y accède
+
+locale: fr
+site_url: https://upem-marsais.pages.dev
+publish_mode: editorial_workflow
+logo_url: /logo.png
+
+collections:
+  - name: "posts"
+    label: "Actualités"
+    folder: "content/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: Titre, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime }
+      - { label: Résumé, name: summary, widget: text, required: false }
+      - { label: Miniature (cover), name: cover, widget: image, required: false }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - { label: Photos (pour galerie), name: images, widget: list, required: false, field: {label: Image, name: image, widget: image} }
+      - { label: Contenu, name: body, widget: markdown }
+
+  - name: "events"
+    label: "Événements"
+    folder: "content/events"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: Titre, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime }
+      - { label: Résumé, name: summary, widget: text, required: false }
+      - { label: Miniature (cover), name: cover, widget: image, required: false }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - { label: Photos (pour galerie), name: images, widget: list, required: false, field: {label: Image, name: image, widget: image} }
+      - { label: Contenu, name: body, widget: markdown }
+
+  - name: "minutes"
+    label: "Compte rendu"
+    folder: "content/minutes"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: Titre, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime }
+      - { label: Résumé, name: summary, widget: text, required: false }
+      - { label: Pièce jointe (facultatif), name: cover, widget: file, required: false }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - { label: Photos (pour galerie), name: images, widget: list, required: false, field: {label: Image, name: image, widget: image} }
+      - { label: Contenu, name: body, widget: markdown }
