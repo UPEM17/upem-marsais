@@ -1,24 +1,8 @@
-{
-  "name": "upem-app",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Site officiel de l'association UPEM de Marsais",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "gray-matter": "^4.0.3",
-    "marked": "^12.0.2",
-    "next": "14.2.5",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.5.4",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@types/node": "^20.11.30"
-  }
-}
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  images: { unoptimized: true },
+  trailingSlash: true,
+};
+
+module.exports = nextConfig;
