@@ -14,13 +14,20 @@ export async function onRequest(context) {
     })
   });
   const data = await res.json();
+
   if (!data.access_token) {
     return new Response(JSON.stringify(data), {
       status: 400,
       headers: { "Content-Type": "application/json" }
     });
   }
-  const admin = new URL(`${url.origin}/admin/`);
-  admin.hash = `#access_token=${data.access_token}&token_type=bearer&provider=github`;
+
+  // si site_id a été fourni par Decap, on l'utilise comme base pour /admin/
+  const siteId = url.searchParams.get("site_id");
+  const base = siteId ? `https://${siteId}` : url.origin;
+
+  // format attendu par Decap : /admin/#access_token=...&token_type=bearer&provider=github
+  const admin = new URL(`${base}/admin/`);
+  admin.hash = `access_token=${encodeURIComponent(data.access_token)}&token_type=bearer&provider=github`;
   return Response.redirect(admin.toString(), 302);
 }
