@@ -1,71 +1,49 @@
 locale: fr
-site_url: https://upem17.pages.dev
-logo_url: /logo.png
+site_url: https://upem-marsais.pages.dev
+logo_url: /actifs/telechargements/logo-upem.png
 
 backend:
   name: github
   repo: UPEM17/upem-marsais
   branch: main
+  auth_scope: repo
 
 publish_mode: editorial_workflow
 
-# 📸 médias
-media_folder: "upem-app/public/uploads"   # chemin DANS le repo
-public_folder: "/uploads"                 # URL publique
+media_folder: "actifs/telechargements"
+public_folder: "/actifs/telechargements"
 
 collections:
   - name: "actualites"
     label: "Actualités"
-    folder: "upem-app/content/posts"
+    folder: "data/posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image de couverture", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Contenu", name: "body", widget: "markdown" }
 
   - name: "evenements"
     label: "Événements"
-    folder: "upem-app/content/events"
+    folder: "data/events"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Lieu", name: "lieu", widget: "string", required: false }
-      - { label: "Image de couverture", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Description", name: "body", widget: "markdown" }
 
-  - name: "comptes_rendus"
+  - name: "minutes"
     label: "Comptes rendus"
-    folder: "upem-app/content/minutes"
+    folder: "data/minutes"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Fichier (PDF)", name: "fichier", widget: "file", required: false }
-      - { label: "Résumé / Notes", name: "body", widget: "markdown", required: false }
-
-  - name: "commandes"
-    label: "Commandes"
-    folder: "upem-app/content/commandes"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    fields:
-      - { label: "Nom de la commande", name: "title", widget: "string" }
-      - { label: "Date limite", name: "date", widget: "datetime" }
-      - { label: "Image / visuel", name: "image", widget: "image", required: false }
-      - { label: "Détails", name: "body", widget: "markdown", required: false }
-
-  - name: "galerie"
-    label: "Galerie (photos)"
-    folder: "upem-app/content/galerie"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Date", name: "date", widget: "datetime", required: false }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Description", name: "body", widget: "markdown", required: false }
+      - { label: "Fichier", name: "fichier", widget: "file", required: false }
+      - { label: "Contenu", name: "body", widget: "markdown", required: false }
