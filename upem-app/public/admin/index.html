@@ -5,20 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin UPEM</title>
   <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;background:#f5f7fb;margin:0}
+    .wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 6px 24px rgba(10,20,40,.06);padding:24px;max-width:420px;width:100%}
+    .row{margin:10px 0}
+    input[type=password]{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;font-size:16px}
+    button{width:100%;padding:12px;border:0;border-radius:10px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
+    .muted{color:#6b7280;font-size:13px;margin-top:10px}
+    .hidden{display:none}
+    .logo{display:block;margin:0 auto 14px auto;height:80px}
+    .err{color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:10px;border-radius:10px;margin-top:10px}
+  </style>
 </head>
 <body>
-  <!-- Correctif : retire le "/" dans le hash (#/access_token → #access_token) -->
   <script>
+    // Corrige les retours type "#/access_token=..." éventuels
     (function () {
       const h = location.hash || "";
       if (h.startsWith("#/access_token=")) {
-        const fixed = "#" + h.slice(2);
-        history.replaceState(null, "", location.pathname + fixed);
+        history.replaceState(null, "", location.pathname + "#" + h.slice(2));
       }
     })();
   </script>
 
-  <!-- Chargement de Decap CMS -->
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <div id="gate" class="wrap">
+    <div class="card">
+      <img src="/logo.png" alt="UPEM" class="logo" />
+      <h2 style="text-align:center;margin:0 0 10px">Connexion Admin</h2>
+      <div class="row">
+        <input id="pwd" type="password" placeholder="Mot de passe admin" autocomplete="current-password" />
+      </div>
+      <div class="row">
+        <button id="go">Se connecter</button>
+      </div>
+      <div id="err" class="err hidden"></div>
+      <p class="muted" style="text-align:center">Accès réservé aux administrateurs UPEM.</p>
+    </div>
+  </div>
+
+  <div id="cms" class="hidden">
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  </div>
+
+  <script>
+    // Si un access_token est déjà présent, on charge directement Decap
+    function hasToken() { return (location.hash || "").includes("access_token="); }
+    function showCMS() {
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('cms').classList.remove('hidden');
+    }
+    async function login() {
+      const pwd = (document.getElementById('pwd').value || "").trim();
+      const errBox = document.getElementById('err');
+      errBox.classList.add('hidden'); errBox.textContent = "";
+      try {
+        const res = await fetch('/api/admin/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.access_token) {
+          throw new Error(data?.error || 'Échec de l’authentification');
+        }
+        // Injecte le token dans l’URL pour Decap (#access_token=…)
+        const hash = `#access_token=${encodeURIComponent(data.access_token)}&token_type=${encodeURIComponent(data.token_type||'bearer')}&provider=${encodeURIComponent(data.provider||'github')}`;
+        history.replaceState(null, "", location.pathname + hash);
+        showCMS();
+      } catch (e) {
+        errBox.textContent = e.message || 'Erreur';
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('go').addEventListener('click', login);
+    document.getElementById('pwd').addEventListener('keydown', (e)=>{ if(e.key==='Enter') login(); });
+
+    // Démarrage
+    if (hasToken()) {
+      showCMS();
+    }
+  </script>
 </body>
 </html>
