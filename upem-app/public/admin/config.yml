@@ -1,31 +1,23 @@
 # =============================
 # ⚙️ CONFIGURATION DECAP CMS
 # =============================
+
 locale: fr
 site_url: https://upem17.pages.dev
 logo_url: /logo.png
 
 backend:
-  # On reste en "github" mais le jeton est injecté par /admin/index.html,
-  # donc pas d'OAuth GitHub. Le PAT est renvoyé par /api/admin/token.
   name: github
-  repo: UPEM17/upem-marsais
-  branch: main
-  commit_messages:
-    create: "🆕 Création {{collection}} : {{slug}}"
-    update: "✏️ Mise à jour {{collection}} : {{slug}}"
-    delete: "🗑️ Suppression {{collection}} : {{slug}}"
-    uploadMedia: "📸 Ajout média : {{path}}"
-    deleteMedia: "🧹 Suppression média : {{path}}"
+  repo: UPEM17/upem-marsais   # dépôt GitHub
+  branch: main                # branche principale
 
-# IMPORTANT : workflow simple -> commit direct sur main
+# ✅ Publication directe sur main (plus de PR / brouillons persistants)
 publish_mode: simple
 
 # Dossiers médias
-media_folder: "public/uploads"   # dans le repo
-public_folder: "/uploads"        # URL publique
+media_folder: "public/uploads"   # où les images sont écrites dans le repo
+public_folder: "/uploads"        # URL publique utilisée par le site
 
-# Collections
 collections:
   # 📰 ACTUALITÉS
   - name: "posts"
@@ -33,7 +25,6 @@ collections:
     folder: "content/posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
@@ -46,12 +37,11 @@ collections:
     folder: "content/events"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Lieu", name: "lieu", widget: "string", required: false }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lieu", name: "lieu", widget: "string", required: false }
       - { label: "Description", name: "body", widget: "markdown" }
 
   # 🧾 COMPTES-RENDUS
@@ -60,7 +50,6 @@ collections:
     folder: "content/minutes"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
@@ -73,7 +62,6 @@ collections:
     folder: "content/commandes"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
     fields:
       - { label: "Nom de la commande", name: "title", widget: "string" }
       - { label: "Date limite", name: "date", widget: "datetime" }
@@ -86,7 +74,6 @@ collections:
     folder: "content/galerie"
     create: true
     slug: "{{slug}}"
-    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime", required: false }
