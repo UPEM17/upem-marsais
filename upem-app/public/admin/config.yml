@@ -5,7 +5,7 @@ backend:
   name: github
   repo: UPEM17/upem-marsais
   branch: main
-  base_url: /api/auth        # L'URL du proxy d'authentification (nos functions Cloudflare)
+  base_url: https://upem17.pages.dev/api/auth   # <— au lieu de /api/auth
   auth_endpoint: login       # Fonction qui gère le login (login.js)
 
 publish_mode: editorial_workflow
