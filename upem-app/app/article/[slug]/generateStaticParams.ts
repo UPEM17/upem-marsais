@@ -1,7 +1,6 @@
 // upem-app/app/article/[slug]/generateStaticParams.ts
-import { getAllSlugs } from "@/lib/content";
+import { getAllSlugs } from "../../../lib/content";
 
-export default function generateStaticParams() {
-  // retourne [{ slug: "xxx" }, ...] pour l'export statique
+export function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
 }
