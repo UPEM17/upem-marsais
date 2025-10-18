@@ -1,17 +1,17 @@
+site_url: https://upem17.pages.dev
+logo_url: /logo.png
+
 backend:
   name: github
-  repo: UPEM17/upem-marsais   # ← ton dépôt GitHub
+  repo: UPEM17/upem-marsais
   branch: main
   base_url: /api/auth
   auth_endpoint: login
 
-media_folder: "public/uploads"    # où sont rangés les fichiers dans le repo
-public_folder: "/uploads"         # comment le site y accède
-
-locale: fr
-site_url: https://upem17.pages.dev
+media_folder: "public/uploads"
+public_folder: "/uploads"
 publish_mode: editorial_workflow
-logo_url: /logo.png
+locale: fr
 
 collections:
   - name: "posts"
@@ -20,13 +20,12 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: Titre, name: title, widget: string }
-      - { label: Date, name: date, widget: datetime }
-      - { label: Résumé, name: summary, widget: text, required: false }
-      - { label: Miniature (cover), name: cover, widget: image, required: false }
-      - { label: Tags, name: tags, widget: list, required: false }
-      - { label: Photos (pour galerie), name: images, widget: list, required: false, field: {label: Image, name: image, widget: image} }
-      - { label: Contenu, name: body, widget: markdown }
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Résumé", name: "summary", widget: "text", required: false }
+      - { label: "Miniature", name: "cover", widget: "image", required: false }
+      - { label: "Photos (galerie)", name: "images", widget: "list", required: false, field: { label: "Image", name: "image", widget: "image" } }
+      - { label: "Contenu", name: "body", widget: "markdown" }
 
   - name: "events"
     label: "Événements"
@@ -34,13 +33,12 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: Titre, name: title, widget: string }
-      - { label: Date, name: date, widget: datetime }
-      - { label: Résumé, name: summary, widget: text, required: false }
-      - { label: Miniature (cover), name: cover, widget: image, required: false }
-      - { label: Tags, name: tags, widget: list, required: false }
-      - { label: Photos (pour galerie), name: images, widget: list, required: false, field: {label: Image, name: image, widget: image} }
-      - { label: Contenu, name: body, widget: markdown }
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Résumé", name: "summary", widget: "text", required: false }
+      - { label: "Miniature", name: "cover", widget: "image", required: false }
+      - { label: "Photos (galerie)", name: "images", widget: "list", required: false, field: { label: "Image", name: "image", widget: "image" } }
+      - { label: "Contenu", name: "body", widget: "markdown" }
 
   - name: "minutes"
     label: "Compte rendu"
@@ -48,10 +46,8 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: Titre, name: title, widget: string }
-      - { label: Date, name: date, widget: datetime }
-      - { label: Résumé, name: summary, widget: text, required: false }
-      - { label: Pièce jointe (facultatif), name: cover, widget: file, required: false }
-      - { label: Tags, name: tags, widget: list, required: false }
-      - { label: Photos (pour galerie), name: images, widget: list, required: false, field: {label: Image, name: image, widget: image} }
-      - { label: Contenu, name: body, widget: markdown }
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Résumé", name: "summary", widget: "text", required: false }
+      - { label: "Pièce jointe", name: "cover", widget: "file", required: false }
+      - { label: "Contenu", name: "body", widget: "markdown" }
