@@ -1,59 +1,52 @@
 # =============================
 # ⚙️ CONFIGURATION DECAP CMS
 # =============================
-
 locale: fr
 site_url: https://upem17.pages.dev
 logo_url: /logo.png
 
 backend:
+  # On reste en "github" mais le jeton est injecté par /admin/index.html,
+  # donc pas d'OAuth GitHub. Le PAT est renvoyé par /api/admin/token.
   name: github
-  repo: UPEM17/upem-marsais        # dépôt GitHub
-  branch: main                     # branche principale
+  repo: UPEM17/upem-marsais
+  branch: main
   commit_messages:
-    create: "🆕 {{collection}} : {{slug}}"
-    update: "✏️ {{collection}} : {{slug}}"
-    delete: "🗑️ {{collection}} : {{slug}}"
-    uploadMedia: "📸 média : {{path}}"
-    deleteMedia: "🧹 suppr média : {{path}}"
+    create: "🆕 Création {{collection}} : {{slug}}"
+    update: "✏️ Mise à jour {{collection}} : {{slug}}"
+    delete: "🗑️ Suppression {{collection}} : {{slug}}"
+    uploadMedia: "📸 Ajout média : {{path}}"
+    deleteMedia: "🧹 Suppression média : {{path}}"
 
-# 👉 Enregistre directement dans main (pas de brouillons cachés)
+# IMPORTANT : workflow simple -> commit direct sur main
 publish_mode: simple
 
-# Medias
-media_folder: "public/uploads"     # chemin dans le repo
-public_folder: "/uploads"          # URL publique
+# Dossiers médias
+media_folder: "public/uploads"   # dans le repo
+public_folder: "/uploads"        # URL publique
 
-# Format par défaut
-slug:
-  encoding: "ascii"
-  clean_accents: true
-
+# Collections
 collections:
-  # 📰 ACTUALITÉS -> content/posts
-  - name: "actualites"
+  # 📰 ACTUALITÉS
+  - name: "posts"
     label: "Actualités"
     folder: "content/posts"
     create: true
-    extension: "md"
-    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image (couverture)", name: "image", widget: "image", required: false }
-      - { label: "Tags", name: "tags", widget: "list", required: false }
-      - { label: "Résumé", name: "summary", widget: "text", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Contenu", name: "body", widget: "markdown" }
 
-  # 🎉 ÉVÉNEMENTS -> content/events
-  - name: "evenements"
+  # 🎉 ÉVÉNEMENTS
+  - name: "events"
     label: "Événements"
     folder: "content/events"
     create: true
-    extension: "md"
-    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
@@ -61,42 +54,39 @@ collections:
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Description", name: "body", widget: "markdown" }
 
-  # 🧾 COMPTES-RENDUS -> content/minutes
-  - name: "comptes_rendus"
+  # 🧾 COMPTES-RENDUS
+  - name: "minutes"
     label: "Comptes rendus"
     folder: "content/minutes"
     create: true
-    extension: "md"
-    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Document (PDF)", name: "fichier", widget: "file", required: false }
-      - { label: "Résumé / Notes", name: "body", widget: "markdown", required: false }
+      - { label: "Résumé / Notes", name: "body", widget: "markdown" }
 
-  # 📦 COMMANDES -> content/commandes (crée ce dossier si absent)
+  # 📦 COMMANDES
   - name: "commandes"
     label: "Commandes"
     folder: "content/commandes"
     create: true
-    extension: "md"
-    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    format: "frontmatter"
     fields:
       - { label: "Nom de la commande", name: "title", widget: "string" }
       - { label: "Date limite", name: "date", widget: "datetime" }
       - { label: "Image / visuel", name: "image", widget: "image", required: false }
       - { label: "Détails", name: "body", widget: "markdown" }
 
-  # 🖼️ GALERIE -> content/galerie (crée ce dossier si absent)
+  # 🖼️ GALERIE
   - name: "galerie"
     label: "Galerie"
     folder: "content/galerie"
     create: true
-    extension: "md"
-    format: "frontmatter"
     slug: "{{slug}}"
+    format: "frontmatter"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime", required: false }
