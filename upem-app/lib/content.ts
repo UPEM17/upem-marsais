@@ -5,7 +5,7 @@ import path from "node:path";
 export type Post = {
   slug: string;
   title: string;
-  date: string;        // ISO
+  date: string;
   image?: string;
   excerpt?: string;
   body?: string;
@@ -17,13 +17,10 @@ const CONTENT_DIR = path.join(ROOT, "upem-app", "content");
 function readDirSafe(p: string) {
   try { return fs.readdirSync(p); } catch { return []; }
 }
-
 function readFileSafe(p: string) {
   try { return fs.readFileSync(p, "utf8"); } catch { return ""; }
 }
-
 function parseFrontmatter(src: string) {
-  // très simple: lit un frontmatter YAML minimal entre --- ... ---
   const m = src.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);
   if (!m) return { data: {} as any, body: src };
   const yaml = Object.fromEntries(
@@ -41,7 +38,6 @@ function parseFrontmatter(src: string) {
   );
   return { data: yaml, body: m[2] };
 }
-
 function loadCollection(folder: string): Post[] {
   const dir = path.join(CONTENT_DIR, folder);
   const files = readDirSafe(dir).filter(f => f.endsWith(".md"));
@@ -58,33 +54,16 @@ function loadCollection(folder: string): Post[] {
       body,
     };
   });
-  // tri du plus récent au plus ancien
   return items.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-/** Collections */
-export function getPosts(): Post[] {
-  return loadCollection("posts");
-}
+export function getPosts()     { return loadCollection("posts"); }
+export function getEvents()    { return loadCollection("events"); }
+export function getMinutes()   { return loadCollection("minutes"); }
+export function getCommandes() { return loadCollection("commandes"); }
+export function getGalerie()   { return loadCollection("galerie"); }
 
-export function getEvents(): Post[] {
-  return loadCollection("events");
-}
-
-export function getMinutes(): Post[] {
-  return loadCollection("minutes");
-}
-
-export function getCommandes(): Post[] {
-  return loadCollection("commandes");
-}
-
-export function getGalerie(): Post[] {
-  return loadCollection("galerie");
-}
-
-/** Articles par slug (toutes collections confondues) */
-export function getAllArticles(): Post[] {
+export function getAllArticles() {
   return [
     ...getPosts(),
     ...getEvents(),
@@ -92,12 +71,9 @@ export function getAllArticles(): Post[] {
     ...getCommandes(),
   ];
 }
-
-export function getArticleBySlug(slug: string): Post | undefined {
-  return getAllArticles().find(p => p.slug === slug);
-}
-
-/** Les slugs pour /article/[slug] */
 export function getAllSlugs(): string[] {
   return getAllArticles().map(p => p.slug);
+}
+export function getArticleBySlug(slug: string) {
+  return getAllArticles().find(p => p.slug === slug);
 }
