@@ -116,3 +116,7 @@ body::before{
   border-radius: 12px;
   color: #0f172a;
 }
+.dot{
+  display:inline-block; width:8px; height:8px; margin-left:6px;
+  border-radius:999px; background:#ef4444; vertical-align:middle;
+}
