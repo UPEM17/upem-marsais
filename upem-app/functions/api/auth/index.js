@@ -1,6 +1,6 @@
 /**
- * Decap CMS OAuth proxy GitHub – Cloudflare Pages Functions
- * Routes gérées : /api/auth/login  et  /api/auth/callback
+ * Decap CMS OAuth proxy (GitHub) pour Cloudflare Pages
+ * Gère:  /api/auth/login  et  /api/auth/callback
  */
 export async function onRequest(context) {
   const url = new URL(context.request.url);
@@ -33,7 +33,10 @@ export async function onRequest(context) {
     });
     const tokenJson = await tokenRes.json();
     if (!tokenJson.access_token) {
-      return new Response(JSON.stringify(tokenJson), { status: 400, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(tokenJson), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
     const adminUrl = new URL(`${url.origin}/admin/`);
