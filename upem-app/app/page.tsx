@@ -1,24 +1,32 @@
 import Link from "next/link";
-import { getEvents } from "../lib/content";
+import { getEvents } from "../../lib/content";
 
-export default function Home() {
-  const evts = getEvents().slice(0, 1);
+export const metadata = { title: "Événements – UPEM" };
+
+export default async function EvenementsPage() {
+  const events = await getEvents();
+
   return (
     <main className="container">
-      <h1>UPEM</h1>
-      {evts.length === 0 ? (
-        <p>Bienvenue !</p>
+      <h1>Événements</h1>
+      {events.length === 0 ? (
+        <p>Aucun événement pour le moment.</p>
       ) : (
-        <>
-          <h2>À la une</h2>
-          <ul>
-            {evts.map(e => (
-              <li key={e.slug}>
-                <Link href={`/article/${e.slug}`}>{e.title}</Link>
-              </li>
-            ))}
-          </ul>
-        </>
+        <ul style={{ padding: 0, listStyle: "none" }}>
+          {events.map((e) => (
+            <li key={e.slug} style={{ margin: "14px 0" }}>
+              <Link href={`/article/${e.slug}`} style={{ fontWeight: 700 }}>
+                {e.title}
+              </Link>
+              {e.date && (
+                <span style={{ color: "#6b7280", marginLeft: 8 }}>
+                  {new Date(e.date).toLocaleDateString("fr-FR")}
+                </span>
+              )}
+              {e.lieu && <span style={{ marginLeft: 8 }}>• {e.lieu}</span>}
+            </li>
+          ))}
+        </ul>
       )}
     </main>
   );
