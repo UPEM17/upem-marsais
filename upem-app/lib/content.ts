@@ -37,10 +37,8 @@ function mdToHtml(md: string): string {
 function readOne(fileAbs: string, type: AnyDoc["type"]): AnyDoc {
   const raw = fs.readFileSync(fileAbs, "utf8");
   const { data, content } = matter(raw);
-
   const slug = path.basename(fileAbs, ".md");
 
-  // champs communs
   const base: BaseDoc = {
     type,
     slug,
@@ -80,7 +78,6 @@ export function getMinutes(): MinuteDoc[] {
     .sort((a, b) => (a.date && b.date ? b.date.localeCompare(a.date) : 0));
 }
 
-// Slugs pour SSG
 export function getAllSlugs(): string[] {
   const p = listMdFiles(DIR_POSTS).map((f) => path.basename(f, ".md"));
   const e = listMdFiles(DIR_EVENTS).map((f) => path.basename(f, ".md"));
@@ -96,9 +93,48 @@ export function getBySlug(slug: string): AnyDoc | null {
   ];
   for (const { dir, type } of candidates) {
     const file = path.join(dir, `${slug}.md`);
-    if (fs.existsSync(file)) {
-      return readOne(file, type);
-    }
+    if (fs.existsSync(file)) return readOne(file, type);
   }
   return null;
+}
+
+// Agrégations pratiques
+
+export function getLatest(limit = 12): AnyDoc[] {
+  const all = [...getEvents(), ...getPosts()];
+  all.sort((a, b) => (a.date && b.date ? b.date.localeCompare(a.date) : 0));
+  return all.slice(0, limit);
+}
+
+export function getNextEvent(): EventDoc | null {
+  const now = new Date();
+  const list = getEvents();
+  const next = list
+    .filter(e => e.date && new Date(e.date) >= now)
+    .sort((a, b) => new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime())[0];
+  return next || null;
+}
+
+export function getLastUpdated(): string {
+  const dates = [...getEvents(), ...getPosts(), ...getMinutes()]
+    .map(d => d.date)
+    .filter(Boolean) as string[];
+  if (!dates.length) return new Date(0).toISOString();
+  dates.sort((a, b) => b.localeCompare(a));
+  return new Date(dates[0]!).toISOString();
+}
+
+export function getGalleryImages(): string[] {
+  const imgs: string[] = [];
+  const push = (x?: string | string[]) => {
+    if (!x) return;
+    if (Array.isArray(x)) x.forEach(v => v && imgs.push(v));
+    else imgs.push(x);
+  };
+  [...getPosts(), ...getEvents(), ...getMinutes()].forEach((d) => {
+    push(d.cover);
+    push(d.images);
+  });
+  // dédoublonne en conservant l’ordre
+  return [...new Set(imgs)];
 }
