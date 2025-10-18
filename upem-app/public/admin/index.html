@@ -7,6 +7,18 @@
   <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
 </head>
 <body>
+  <!-- Correctif : retire le "/" dans le hash (#/access_token → #access_token) -->
+  <script>
+    (function () {
+      const h = location.hash || "";
+      if (h.startsWith("#/access_token=")) {
+        const fixed = "#" + h.slice(2);
+        history.replaceState(null, "", location.pathname + fixed);
+      }
+    })();
+  </script>
+
+  <!-- Chargement de Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </body>
 </html>
