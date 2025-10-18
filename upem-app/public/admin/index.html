@@ -6,10 +6,10 @@
   <title>Admin UPEM</title>
   <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
   <style>
-    :root{color-scheme:light only}
+    :root { color-scheme: light; }
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;background:#f5f7fb;margin:0}
     .wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
-    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 6px 24px rgba(10,20,40,.06);padding:24px;max-width:420px;width:100%}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 6px 24px rgba(10,20,40,.06);padding:24px;max-width:440px;width:100%}
     .row{margin:10px 0}
     input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;font-size:16px}
     button{width:100%;padding:12px;border:0;border-radius:10px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
@@ -18,11 +18,19 @@
     .logo{display:block;margin:0 auto 14px auto;height:80px}
     .err{color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:10px;border-radius:10px;margin-top:10px}
   </style>
-
-  <!-- On va initialiser Decap manuellement -->
-  <script>window.CMS_MANUAL_INIT = true;</script>
 </head>
 <body>
+  <!-- Fix: transforme "#/access_token=..." en "#access_token=..." -->
+  <script>
+    (function () {
+      const h = location.hash || "";
+      if (h.startsWith("#/access_token=")) {
+        history.replaceState(null, "", location.pathname + "#" + h.slice(2));
+      }
+    })();
+  </script>
+
+  <!-- Écran de connexion simple (username/password) -->
   <div id="gate" class="wrap">
     <div class="card">
       <img src="/logo.png" alt="UPEM" class="logo" />
@@ -41,59 +49,62 @@
     </div>
   </div>
 
-  <div id="cms" class="hidden"></div>
+  <!-- Le CMS ne se charge qu'après auth -->
+  <div id="cms" class="hidden">
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  </div>
 
   <script>
-    // ---------- Helpers ----------
-    function $(id){ return document.getElementById(id); }
-    function showCMS(){
-      $('gate').classList.add('hidden');
-      $('cms').classList.remove('hidden');
-    }
-    function parseHash() {
-      const h = (location.hash || '').replace(/^#\/?/, '');
-      const out = {};
-      h.split('&').forEach(p=>{
-        const [k,v] = p.split('=');
-        if(k) out[decodeURIComponent(k)] = decodeURIComponent(v||'');
-      });
-      return out;
-    }
-    function saveTokenToLocalStorage(token) {
-      // Objet attendu par Decap (garde aussi l'ancien nom pour compatibilité)
-      const user = {
-        token,
-        backendName: 'github',
-        login: 'admin',
-        name: 'UPEM Admin',
-      };
-      try {
-        localStorage.setItem('decap-cms-user', JSON.stringify(user));
-        localStorage.setItem('netlify-cms-user', JSON.stringify(user)); // compat
-      } catch(_) {}
-    }
-    function loadCMS() {
-      // Charge le script puis lance CMS.init()
-      if (window.CMS) { window.CMS.init(); return; }
-      const s = document.createElement('script');
-      s.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
-      s.onload = function(){ window.CMS.init(); };
-      document.body.appendChild(s);
-    }
-    function startCMSWithToken(token) {
-      saveTokenToLocalStorage(token);
-      // Nettoie l'URL (on retire le token du hash)
-      history.replaceState(null, '', location.pathname);
-      showCMS();
-      loadCMS();
+    /* ---------- UTIL ---------- */
+
+    const TOKEN_HASH_KEY = 'access_token';
+
+    function currentTokenFromHash() {
+      const h = (location.hash || "").replace(/^#/, "");
+      if (!h) return null;
+      const params = new URLSearchParams(h);
+      return params.get(TOKEN_HASH_KEY);
     }
 
-    // ---------- Login via function ----------
+    function setTokenInHash(token, type='bearer', provider='github') {
+      const params = new URLSearchParams();
+      params.set('access_token', token);
+      params.set('token_type', type);
+      params.set('provider', provider);
+      history.replaceState(null, "", location.pathname + "#" + params.toString());
+    }
+
+    function hasToken(){ return !!currentTokenFromHash(); }
+
+    function showCMS(){
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('cms').classList.remove('hidden');
+      // le script Decap est déjà présent dans #cms via <script src="...">
+      // On attend que CMS soit chargé puis on initialise + on applique nos hooks correctifs
+      waitForCMS().then(initCMSWithFixes);
+    }
+
+    function showGate(){
+      document.getElementById('cms').classList.add('hidden');
+      document.getElementById('gate').classList.remove('hidden');
+    }
+
+    function waitForCMS(){
+      return new Promise((resolve)=>{
+        if (window.CMS) return resolve();
+        const int = setInterval(()=>{
+          if (window.CMS) { clearInterval(int); resolve(); }
+        },50);
+      });
+    }
+
+    /* ---------- LOGIN ---------- */
+
     async function login(){
-      const username = ($('user').value || '').trim();
-      const password = ($('pwd').value || '').trim();
-      const errBox = $('err');
-      errBox.classList.add('hidden'); errBox.textContent = '';
+      const username = (document.getElementById('user').value || "").trim();
+      const password = (document.getElementById('pwd').value || "").trim();
+      const errBox = document.getElementById('err');
+      errBox.classList.add('hidden'); errBox.textContent = "";
 
       try{
         const res = await fetch('/api/admin/token', {
@@ -101,27 +112,120 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-        const data = await res.json().catch(()=> ({}));
-        if (!res.ok || !data.access_token) {
-          throw new Error(data?.error || 'Échec de l’authentification');
+
+        // Gestion des erreurs non JSON
+        const text = await res.text();
+        let data = {};
+        try { data = JSON.parse(text); } catch (_) {
+          if (!res.ok) throw new Error(`${res.status} – ${text || 'Erreur'}`);
         }
-        startCMSWithToken(data.access_token);
+
+        if (!res.ok || !data.access_token) {
+          throw new Error(data?.error || `${res.status} – ${text || 'Échec de l’authentification'}`);
+        }
+
+        // Injecte le token pour Decap (#access_token=…)
+        setTokenInHash(data.access_token, data.token_type || 'bearer', data.provider || 'github');
+        showCMS();
       }catch(e){
-        errBox.textContent = (e && e.message) ? e.message : 'Erreur';
+        errBox.textContent = e.message || 'Erreur';
         errBox.classList.remove('hidden');
       }
     }
 
-    $('go').addEventListener('click', login);
-    $('pwd').addEventListener('keydown', (e)=>{ if(e.key==='Enter') login(); });
+    document.getElementById('go').addEventListener('click', login);
+    document.getElementById('pwd').addEventListener('keydown', (e)=>{ if(e.key==='Enter') login(); });
 
-    // ---------- Cas où on arrive avec un #access_token dans l'URL ----------
-    (function bootstrap(){
-      const q = parseHash();
-      if (q.access_token) {
-        startCMSWithToken(q.access_token);
+    /* ---------- PATCHS & HOOKS DECAP ---------- */
+
+    // 1) Corrige les boutons de la médiathèque (Choisir / Supprimer)
+    function wireMediaButtons() {
+      // Essaie plusieurs fois car la modale est rendue en plusieurs passes
+      let tries = 0;
+      const iv = setInterval(() => {
+        tries++;
+
+        // Récupère les deux boutons par leur libellé
+        const btns = [...document.querySelectorAll('button, [role="button"]')];
+        const chooseBtn  = btns.find(b => b.textContent?.trim().startsWith('Choisir les éléments sélectionnés'));
+        const deleteBtn  = btns.find(b => b.textContent?.trim().startsWith('Supprimer les éléments sélectionnés'));
+
+        if (chooseBtn && !chooseBtn.dataset._wired) {
+          chooseBtn.dataset._wired = '1';
+          chooseBtn.disabled = false;
+          chooseBtn.onclick = (e) => {
+            e.preventDefault();
+            // Simule un double-clic sur la carte sélectionnée pour choisir
+            const selected = document.querySelector('.MediaLibrary-card.is-selected, [data-selected="true"]');
+            if (selected) selected.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+          };
+        }
+
+        if (deleteBtn && !deleteBtn.dataset._wired) {
+          deleteBtn.dataset._wired = '1';
+          deleteBtn.disabled = false;
+          deleteBtn.onclick = (e) => {
+            e.preventDefault();
+            // Cherche le bouton Corbeille interne et clique dessus
+            const trash = document.querySelector('[aria-label="Delete selected"], .MediaLibrary-toolbar [data-control="delete"]');
+            if (trash) trash.click();
+          };
+        }
+
+        // Arrête après câblage ou après 20 essais (~3s)
+        if ((chooseBtn && deleteBtn) || tries > 20) clearInterval(iv);
+      }, 150);
+    }
+
+    // 2) Écoute l’événement d’ouverture de la médiathèque (API Decap)
+    function hookDecapEvents() {
+      if (window.CMS?.registerEventListener) {
+        window.CMS.registerEventListener({
+          name: 'mediaLibraryOpen',
+          handler: wireMediaButtons
+        });
       }
-    })();
+
+      // Fallback de sécurité : observe le DOM à la montée d’une modale média
+      const obs = new MutationObserver((muts)=>{
+        for (const m of muts) {
+          if (m.addedNodes) {
+            for (const n of m.addedNodes) {
+              if (n.nodeType === 1 && (n.className||'').toString().includes('MediaLibrary')) {
+                wireMediaButtons();
+              }
+            }
+          }
+        }
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // 3) Initialisation Decap + hooks
+    function initCMSWithFixes() {
+      // Important : Decap lit le token depuis location.hash avant init()
+      // On applique aussi quelques options “propres”
+      const cfg = {
+        load_config_file: true,              // lit public/admin/config.yml
+      };
+
+      window.CMS.init(cfg);
+      hookDecapEvents();
+
+      // BONUS UX : quand on a un token, on masque la barre “Login with GitHub” (si jamais)
+      const hideGithubCTA = () => {
+        const gh = [...document.querySelectorAll('a,button')]
+          .find(x => /github/i.test(x.textContent||'') && /connect|login/i.test(x.textContent||''));
+        if (gh) gh.style.display = 'none';
+      };
+      setTimeout(hideGithubCTA, 500);
+      const tid = setInterval(hideGithubCTA, 600);
+      setTimeout(()=>clearInterval(tid), 4000);
+    }
+
+    /* ---------- DÉMARRAGE ---------- */
+    if (hasToken()) showCMS(); else showGate();
+
   </script>
 </body>
 </html>
