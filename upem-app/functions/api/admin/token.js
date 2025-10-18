@@ -7,7 +7,7 @@ export async function onRequest(context) {
 
   try {
     const { password } = await req.json();
-    const ok = password && context.env.Belier666. && password === context.env.ADMIN_PASSWORD;
+    const ok = password && context.env.ADMIN_PASSWORD && password === context.env.ADMIN_PASSWORD;
     if (!ok) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
