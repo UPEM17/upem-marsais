@@ -1,27 +1,25 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { getPosts } from '../../lib/content';
+import Link from "next/link";
+import { getPosts } from "../../lib/content";
 
-export const metadata = { title: 'Actualités – UPEM' };
+export const metadata = { title: "Actualités – UPEM" };
 
-export default function Page(){
+export default function Page() {
   const posts = getPosts();
   return (
-    <div className="grid">
-      {posts.map(p=> (
-        <Link href={`/article/${p.slug}/`} key={p.slug} className="card">
-          {p.cover ? (
-            <Image className="thumb" src={p.cover} alt="miniature" width={120} height={90} />
-          ) : <div className="thumb" />}
-          <div>
-            <div className="meta">{new Date(p.date).toLocaleDateString('fr-FR')}</div>
-            <h3>{p.title}</h3>
-            {p.tags?.map(t=> <span className="tag" key={t}>{t}</span>)}
-            <p className="summary">{p.summary}</p>
-          </div>
-        </Link>
-      ))}
-      {!posts.length && <div className="notice">Aucune actualité pour le moment.</div>}
-    </div>
+    <main className="container">
+      <h1>Actualités</h1>
+      {posts.length === 0 ? (
+        <p>Aucune actualité pour l’instant.</p>
+      ) : (
+        <ul>
+          {posts.map(p => (
+            <li key={p.slug}>
+              <Link href={`/article/${p.slug}`}>{p.title}</Link>{" "}
+              <small>({new Date(p.date).toLocaleDateString("fr-FR")})</small>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
   );
 }
