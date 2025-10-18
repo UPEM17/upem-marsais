@@ -3,19 +3,26 @@ import { getMinutes } from "../../lib/content";
 
 export const metadata = { title: "Comptes rendus – UPEM" };
 
-export default function Page() {
-  const items = getMinutes();
+export default async function MinutesPage() {
+  const minutes = await getMinutes();
+
   return (
     <main className="container">
       <h1>Comptes rendus</h1>
-      {items.length === 0 ? (
-        <p>Aucun compte rendu pour l’instant.</p>
+      {minutes.length === 0 ? (
+        <p>Aucun compte rendu pour le moment.</p>
       ) : (
-        <ul>
-          {items.map(p => (
-            <li key={p.slug}>
-              <Link href={`/article/${p.slug}`}>{p.title}</Link>{" "}
-              <small>({new Date(p.date).toLocaleDateString("fr-FR")})</small>
+        <ul style={{ padding: 0, listStyle: "none" }}>
+          {minutes.map((m) => (
+            <li key={m.slug} style={{ margin: "14px 0" }}>
+              <Link href={`/article/${m.slug}`} style={{ fontWeight: 700 }}>
+                {m.title}
+              </Link>
+              {m.date && (
+                <span style={{ color: "#6b7280", marginLeft: 8 }}>
+                  {new Date(m.date).toLocaleDateString("fr-FR")}
+                </span>
+              )}
             </li>
           ))}
         </ul>
