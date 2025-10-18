@@ -1,21 +1,11 @@
-// =====================================
-// 🔐 UPEM Admin Token - Version simplifiée
-// =====================================
-// Cette fonction vérifie un mot de passe fixe ("Belier666.")
-// et renvoie un token GitHub (GH_PAT) stocké dans Cloudflare Pages.
-//
-// ➜ URL : https://upem17.pages.dev/api/admin/token
-// =====================================
-
+// POST /api/admin/token  → renvoie le PAT GitHub si le mot de passe fourni est correct
 export async function onRequest(context) {
   const req = context.request;
 
-  // Vérifie la méthode HTTP
   if (req.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405 });
   }
 
-  // Lecture du corps JSON { password: "xxx" }
   let body = {};
   try {
     body = await req.json();
@@ -26,13 +16,15 @@ export async function onRequest(context) {
     });
   }
 
+  // ⚠️ Mot de passe attendu côté client (entré dans le formulaire)
   const password = (body.password || "").toString().trim();
 
-  // ⚙️ Configuration interne
-  const FIXED_PASSWORD = "Belier666."; // 🔒 ton mot de passe
-  const GH_PAT = context.env.GH_PAT;   // 🔑 ton token GitHub stocké côté Cloudflare
+  // ⚠️ TON MOT DE PASSE FIXE (NE RIEN CHANGER ICI SAUF LA VALEUR)
+  const FIXED_PASSWORD = "Belier666.";
 
-  // Vérifie la présence du token GitHub
+  // ⚠️ Ton token GitHub doit être défini en variable Cloudflare: GH_PAT
+  const GH_PAT = context.env.GH_PAT;
+
   if (!GH_PAT) {
     return new Response(JSON.stringify({ error: "Missing GH_PAT" }), {
       status: 500,
@@ -40,7 +32,6 @@ export async function onRequest(context) {
     });
   }
 
-  // Vérifie le mot de passe
   if (password !== FIXED_PASSWORD) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
@@ -48,7 +39,7 @@ export async function onRequest(context) {
     });
   }
 
-  // ✅ Succès : renvoie le token GitHub à Decap CMS
+  // ✅ Succès : renvoie le token GitHub pour Decap CMS
   return new Response(
     JSON.stringify({
       access_token: GH_PAT,
