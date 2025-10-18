@@ -1,4 +1,4 @@
-// POST /api/admin/token  → renvoie le PAT GitHub si le mot de passe fourni est correct
+// POST /api/admin/token  → retourne le PAT GitHub si les identifiants sont corrects
 export async function onRequest(context) {
   const req = context.request;
 
@@ -16,13 +16,14 @@ export async function onRequest(context) {
     });
   }
 
-  // ⚠️ Mot de passe attendu côté client (entré dans le formulaire)
+  const username = (body.username || "").toString().trim();
   const password = (body.password || "").toString().trim();
 
-  // ⚠️ TON MOT DE PASSE FIXE (NE RIEN CHANGER ICI SAUF LA VALEUR)
+  // ✅ Identifiants fixes (modifie si tu veux)
+  const FIXED_USER = "admin";
   const FIXED_PASSWORD = "Belier666.";
 
-  // ⚠️ Ton token GitHub doit être défini en variable Cloudflare: GH_PAT
+  // ✅ Ton token GitHub (à mettre en secret Cloudflare: GH_PAT)
   const GH_PAT = context.env.GH_PAT;
 
   if (!GH_PAT) {
@@ -32,14 +33,14 @@ export async function onRequest(context) {
     });
   }
 
-  if (password !== FIXED_PASSWORD) {
+  if (username !== FIXED_USER || password !== FIXED_PASSWORD) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" }
     });
   }
 
-  // ✅ Succès : renvoie le token GitHub pour Decap CMS
+  // OK → renvoyer le token pour Decap CMS
   return new Response(
     JSON.stringify({
       access_token: GH_PAT,
