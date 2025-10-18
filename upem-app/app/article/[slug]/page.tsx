@@ -1,29 +1,38 @@
-import { getPosts, getEvents, getMinutes } from '../../../lib/content';
-import { mdToHtml } from '../../../lib/markdown';
-import Image from 'next/image';
+// upem-app/app/article/[slug]/page.tsx
+import Link from "next/link";
+import { getAllSlugs, getArticleBySlug } from "../../../lib/content";
 
-export function generateStaticParams(){
-  return [...getPosts(), ...getEvents(), ...getMinutes()].map(p=>({ slug: p.slug }));
+export const dynamic = "error";
+export const revalidate = false;
+
+export async function generateStaticParams() {
+  const slugs = getAllSlugs();
+  return slugs.map(slug => ({ slug }));
 }
 
-export default function Page({ params }:{ params:{ slug:string } }){
-  const all = [...getPosts(), ...getEvents(), ...getMinutes()];
-  const p = all.find(x => x.slug === params.slug);
-  if(!p) return <div className="notice">Introuvable</div>;
+type Props = { params: { slug: string } };
+
+export default function ArticlePage({ params }: Props) {
+  const article = getArticleBySlug(params.slug);
+
+  if (!article) {
+    return (
+      <main className="container">
+        <h1>Article introuvable</h1>
+        <p><Link href="/">Retour</Link></p>
+      </main>
+    );
+  }
+
   return (
-    <article className="article">
-      <div className="meta">{new Date(p.date).toLocaleString('fr-FR')}</div>
-      <h1>{p.title}</h1>
-      {p.cover && <Image src={p.cover} alt="" width={1200} height={600} />}
-      <div dangerouslySetInnerHTML={{ __html: mdToHtml(p.content) }} />
-      {p.images?.length ? (
-        <div>
-          <h3>Photos</h3>
-          <div className="gallery">
-            {p.images.map((src,i)=> <img key={i} src={src} alt="" />)}
-          </div>
-        </div>
-      ) : null}
-    </article>
+    <main className="container">
+      <p><Link href="/">← Retour</Link></p>
+      <h1>{article.title}</h1>
+      <p><em>{new Date(article.date).toLocaleDateString("fr-FR")}</em></p>
+      {article.image && (
+        <p><img src={article.image} alt="" style={{ maxWidth: "100%" }} /></p>
+      )}
+      <article dangerouslySetInnerHTML={{ __html: article.body || "" }} />
+    </main>
   );
 }
