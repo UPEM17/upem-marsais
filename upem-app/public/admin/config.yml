@@ -9,7 +9,7 @@ media_folder: "public/uploads"    # où sont rangés les fichiers dans le repo
 public_folder: "/uploads"         # comment le site y accède
 
 locale: fr
-site_url: https://upem-marsais.pages.dev
+site_url: https://upem17.pages.dev
 publish_mode: editorial_workflow
 logo_url: /logo.png
 
