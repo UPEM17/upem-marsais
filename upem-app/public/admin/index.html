@@ -1,94 +1,165 @@
-# =============================
-# ⚙️ CONFIGURATION DECAP CMS
-# =============================
-locale: fr
-site_url: https://upem17.pages.dev
-logo_url: /logo.png
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin UPEM</title>
+  <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
 
-backend:
-  # On reste en "github" mais le jeton est injecté par /admin/index.html,
-  # donc pas d'OAuth GitHub. Le PAT est renvoyé par /api/admin/token.
-  name: github
-  repo: UPEM17/upem-marsais
-  branch: main
-  commit_messages:
-    create: "🆕 Création {{collection}} : {{slug}}"
-    update: "✏️ Mise à jour {{collection}} : {{slug}}"
-    delete: "🗑️ Suppression {{collection}} : {{slug}}"
-    uploadMedia: "📸 Ajout média : {{path}}"
-    deleteMedia: "🧹 Suppression média : {{path}}"
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+      background: #f5f7fb;
+      margin: 0;
+    }
+    .wrap {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgba(10, 20, 40, .06);
+      padding: 24px;
+      max-width: 420px;
+      width: 100%;
+    }
+    .row { margin: 10px 0; }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: 0;
+      border-radius: 10px;
+      background: #111827;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .muted { color: #6b7280; font-size: 13px; margin-top: 10px; }
+    .hidden { display: none; }
+    .logo {
+      display: block;
+      margin: 0 auto 14px auto;
+      height: 80px;
+    }
+    .err {
+      color: #b91c1c;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
 
-# IMPORTANT : workflow simple -> commit direct sur main
-publish_mode: simple
+    /* --- Correctif pour les boutons de la médiathèque --- */
+    .nc-app .MuiDialog-root {
+      z-index: 10000 !important;
+    }
+    .nc-app header.MuiAppBar-root {
+      z-index: 1200 !important;
+    }
+    .nc-app .MuiDialog-root .MuiDialog-container,
+    .nc-app .MuiDialog-root .MuiPaper-root,
+    .nc-app .MuiDialogActions-root button {
+      pointer-events: auto !important;
+    }
+  </style>
+</head>
 
-# Dossiers médias
-media_folder: "public/uploads"   # dans le repo
-public_folder: "/uploads"        # URL publique
+<body>
+  <!-- Fix: transforme "#/access_token=..." en "#access_token=..." -->
+  <script>
+    (function () {
+      const h = location.hash || "";
+      if (h.startsWith("#/access_token=")) {
+        history.replaceState(null, "", location.pathname + "#" + h.slice(2));
+      }
+    })();
+  </script>
 
-# Collections
-collections:
-  # 📰 ACTUALITÉS
-  - name: "posts"
-    label: "Actualités"
-    folder: "content/posts"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
-    fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
-      - { label: "Contenu", name: "body", widget: "markdown" }
+  <div id="gate" class="wrap">
+    <div class="card">
+      <img src="/logo.png" alt="UPEM" class="logo" />
+      <h2 style="text-align:center;margin:0 0 10px">Connexion Admin</h2>
+      <div class="row">
+        <input id="user" type="text" placeholder="Identifiant (ex. admin)" autocomplete="username" />
+      </div>
+      <div class="row">
+        <input id="pwd" type="password" placeholder="Mot de passe" autocomplete="current-password" />
+      </div>
+      <div class="row">
+        <button id="go">Se connecter</button>
+      </div>
+      <div id="err" class="err hidden"></div>
+      <p class="muted" style="text-align:center">Accès réservé aux administrateurs UPEM.</p>
+    </div>
+  </div>
 
-  # 🎉 ÉVÉNEMENTS
-  - name: "events"
-    label: "Événements"
-    folder: "content/events"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
-    fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Lieu", name: "lieu", widget: "string", required: false }
-      - { label: "Image", name: "image", widget: "image", required: false }
-      - { label: "Description", name: "body", widget: "markdown" }
+  <div id="cms" class="hidden">
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  </div>
 
-  # 🧾 COMPTES-RENDUS
-  - name: "minutes"
-    label: "Comptes rendus"
-    folder: "content/minutes"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
-    fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Document (PDF)", name: "fichier", widget: "file", required: false }
-      - { label: "Résumé / Notes", name: "body", widget: "markdown" }
+  <script>
+    function hasToken() {
+      return (location.hash || "").includes("access_token=");
+    }
 
-  # 📦 COMMANDES
-  - name: "commandes"
-    label: "Commandes"
-    folder: "content/commandes"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    format: "frontmatter"
-    fields:
-      - { label: "Nom de la commande", name: "title", widget: "string" }
-      - { label: "Date limite", name: "date", widget: "datetime" }
-      - { label: "Image / visuel", name: "image", widget: "image", required: false }
-      - { label: "Détails", name: "body", widget: "markdown" }
+    function showCMS() {
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('cms').classList.remove('hidden');
+    }
 
-  # 🖼️ GALERIE
-  - name: "galerie"
-    label: "Galerie"
-    folder: "content/galerie"
-    create: true
-    slug: "{{slug}}"
-    format: "frontmatter"
-    fields:
-      - { label: "Titre", name: "title", widget: "string" }
-      - { label: "Date", name: "date", widget: "datetime", required: false }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Description", name: "body", widget: "markdown", required: false }
+    async function login() {
+      const username = (document.getElementById('user').value || "").trim();
+      const password = (document.getElementById('pwd').value || "").trim();
+      const errBox = document.getElementById('err');
+      errBox.classList.add('hidden');
+      errBox.textContent = "";
+
+      try {
+        const res = await fetch('/api/admin/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (!res.ok) {
+          throw new Error(`Erreur ${res.status}`);
+        }
+
+        const data = await res.json();
+        if (!data.access_token) {
+          throw new Error(data?.error || 'Échec de l’authentification');
+        }
+
+        // Injecte le token dans le hash (#access_token=…)
+        const hash = `#access_token=${encodeURIComponent(data.access_token)}&token_type=${encodeURIComponent(data.token_type || 'bearer')}&provider=${encodeURIComponent(data.provider || 'github')}`;
+        history.replaceState(null, "", location.pathname + hash);
+        showCMS();
+      } catch (e) {
+        errBox.textContent = e.message || 'Erreur';
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('go').addEventListener('click', login);
+    document.getElementById('pwd').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') login();
+    });
+
+    if (hasToken()) {
+      showCMS();
+    }
+  </script>
+</body>
+</html>
