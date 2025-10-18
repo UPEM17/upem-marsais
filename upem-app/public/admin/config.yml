@@ -1,26 +1,19 @@
-# =============================
-# ⚙️ CONFIGURATION DECAP CMS (FR)
-# =============================
-
 locale: fr
 site_url: https://upem17.pages.dev
 logo_url: /logo.png
 
 backend:
   name: github
-  repo: UPEM17/upem-marsais   # dépôt GitHub
-  branch: main                # branche principale
-  # Pas besoin d’OAuth, le login GitHub par token suffit
+  repo: UPEM17/upem-marsais
+  branch: main
 
-# ✅ Publication directe sur la branche main (pas de brouillons)
-publish_mode: simple
+publish_mode: editorial_workflow
 
-# 📁 Dossiers pour les médias (images, fichiers)
-media_folder: "upem-app/public/uploads"   # emplacement réel dans le dépôt
-public_folder: "/uploads"                 # chemin public visible sur le site
+# 📸 médias
+media_folder: "upem-app/public/uploads"   # chemin DANS le repo
+public_folder: "/uploads"                 # URL publique
 
 collections:
-  # 📰 ACTUALITÉS
   - name: "actualites"
     label: "Actualités"
     folder: "upem-app/content/posts"
@@ -29,10 +22,9 @@ collections:
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image de couverture", name: "image", widget: "image", required: false }
       - { label: "Contenu", name: "body", widget: "markdown" }
 
-  # 🎉 ÉVÉNEMENTS
   - name: "evenements"
     label: "Événements"
     folder: "upem-app/content/events"
@@ -41,11 +33,10 @@ collections:
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Lieu", name: "lieu", widget: "string", required: false }
+      - { label: "Image de couverture", name: "image", widget: "image", required: false }
       - { label: "Description", name: "body", widget: "markdown" }
 
-  # 🧾 COMPTES-RENDUS
   - name: "comptes_rendus"
     label: "Comptes rendus"
     folder: "upem-app/content/minutes"
@@ -54,10 +45,9 @@ collections:
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Document (PDF)", name: "fichier", widget: "file", required: false }
-      - { label: "Résumé / Notes", name: "body", widget: "markdown" }
+      - { label: "Fichier (PDF)", name: "fichier", widget: "file", required: false }
+      - { label: "Résumé / Notes", name: "body", widget: "markdown", required: false }
 
-  # 📦 COMMANDES
   - name: "commandes"
     label: "Commandes"
     folder: "upem-app/content/commandes"
@@ -67,11 +57,10 @@ collections:
       - { label: "Nom de la commande", name: "title", widget: "string" }
       - { label: "Date limite", name: "date", widget: "datetime" }
       - { label: "Image / visuel", name: "image", widget: "image", required: false }
-      - { label: "Détails", name: "body", widget: "markdown" }
+      - { label: "Détails", name: "body", widget: "markdown", required: false }
 
-  # 🖼️ GALERIE
   - name: "galerie"
-    label: "Galerie"
+    label: "Galerie (photos)"
     folder: "upem-app/content/galerie"
     create: true
     slug: "{{slug}}"
@@ -80,4 +69,3 @@ collections:
       - { label: "Date", name: "date", widget: "datetime", required: false }
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Description", name: "body", widget: "markdown", required: false }
-
