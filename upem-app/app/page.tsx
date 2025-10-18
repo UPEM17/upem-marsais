@@ -1,27 +1,29 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getEvents } from "../lib/content";
+import { getEvents } from "../../lib/content";
 
-export const metadata = { title: "UPEM" };
+export const metadata = { title: "Événements – UPEM" };
 
-export default function Home() {
-  const events = getEvents().slice(0, 1);
-
+export default function Page() {
+  const list = getEvents();
   return (
     <main className="container">
-      {events.map((e) => (
-        <Link href={`/article/${e.slug}/`} key={e.slug} className="card">
-          {e.cover ? (
-            <Image className="thumb" src={e.cover} alt="miniature" width={120} height={90} />
-          ) : (
-            <div className="thumb" />
-          )}
-          <div>
-            <h3>{e.title}</h3>
-            {e.date && <p style={{ color: "#6b7280", marginTop: 0 }}>{e.date}</p>}
-          </div>
-        </Link>
-      ))}
+      <h1>Événements</h1>
+      <div className="grid">
+        {list.map((p) => (
+          <Link href={`/article/${p.slug}/`} key={p.slug} className="card">
+            {p.cover ? (
+              <Image className="thumb" src={p.cover} alt="miniature" width={120} height={90} />
+            ) : (
+              <div className="thumb" />
+            )}
+            <div>
+              <div className="meta">{p.date ? new Date(p.date).toLocaleDateString("fr-FR") : ""}</div>
+              <div className="title">{p.title}</div>
+            </div>
+          </Link>
+        ))}
+      </div>
     </main>
   );
 }
