@@ -19,11 +19,11 @@ export async function onRequest(context) {
   const username = (body.username || "").toString().trim();
   const password = (body.password || "").toString().trim();
 
-  // ✅ Identifiants fixes (modifie si tu veux)
+  // Identifiants fixes
   const FIXED_USER = "admin";
   const FIXED_PASSWORD = "Belier666.";
 
-  // ✅ Ton token GitHub (à mettre en secret Cloudflare: GH_PAT)
+  // Token GitHub stocké comme secret Cloudflare
   const GH_PAT = context.env.GH_PAT;
 
   if (!GH_PAT) {
@@ -40,7 +40,6 @@ export async function onRequest(context) {
     });
   }
 
-  // OK → renvoyer le token pour Decap CMS
   return new Response(
     JSON.stringify({
       access_token: GH_PAT,
