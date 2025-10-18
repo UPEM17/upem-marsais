@@ -5,8 +5,7 @@
   "description": "Site officiel de l'association UPEM de Marsais",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "next build && next export -o out"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
