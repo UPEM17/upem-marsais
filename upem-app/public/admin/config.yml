@@ -1,15 +1,95 @@
+# =============================
+# ⚙️ CONFIGURATION DECAP CMS
+# =============================
+
+locale: fr
 site_url: https://upem17.pages.dev
 logo_url: /logo.png
 
 backend:
   name: github
-  repo: UPEM17/upem-marsais
-  branch: main
+  repo: UPEM17/upem-marsais       # dépôt GitHub
+  branch: main                    # branche principale
+  commit_messages:
+    create: "🆕 Création {{collection}} : {{slug}}"
+    update: "✏️ Mise à jour {{collection}} : {{slug}}"
+    delete: "🗑️ Suppression {{collection}} : {{slug}}"
+    uploadMedia: "📸 Ajout média : {{path}}"
+    deleteMedia: "🧹 Suppression média : {{path}}"
 
 publish_mode: editorial_workflow
-locale: fr
 
-media_folder: "public/uploads"
-public_folder: "/uploads"
+media_folder: "public/uploads"    # dossier dans le repo
+public_folder: "/uploads"         # URL publique des médias
 
-# ... (collections inchangées)
+collections:
+  # ----------------------------
+  # 📰 ACTUALITÉS
+  # ----------------------------
+  - name: "actualites"
+    label: "Actualités"
+    folder: "data/actualites"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Contenu", name: "body", widget: "markdown" }
+
+  # ----------------------------
+  # 🎉 ÉVÉNEMENTS
+  # ----------------------------
+  - name: "evenements"
+    label: "Événements"
+    folder: "data/evenements"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lieu", name: "lieu", widget: "string", required: false }
+      - { label: "Description", name: "body", widget: "markdown" }
+
+  # ----------------------------
+  # 🧾 COMPTES-RENDUS
+  # ----------------------------
+  - name: "comptes_rendus"
+    label: "Comptes rendus"
+    folder: "data/comptes_rendus"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Document (PDF)", name: "fichier", widget: "file", required: false }
+      - { label: "Résumé / Notes", name: "body", widget: "markdown" }
+
+  # ----------------------------
+  # 📦 COMMANDES
+  # ----------------------------
+  - name: "commandes"
+    label: "Commandes"
+    folder: "data/commandes"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Nom de la commande", name: "title", widget: "string" }
+      - { label: "Date limite", name: "date", widget: "datetime" }
+      - { label: "Image / visuel", name: "image", widget: "image", required: false }
+      - { label: "Détails", name: "body", widget: "markdown" }
+
+  # ----------------------------
+  # 🖼️ GALERIE
+  # ----------------------------
+  - name: "galerie"
+    label: "Galerie"
+    folder: "data/galerie"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Titre", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime", required: false }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Description", name: "body", widget: "markdown", required: false }
