@@ -8,71 +8,80 @@ logo_url: /logo.png
 
 backend:
   name: github
-  repo: UPEM17/upem-marsais       # dépôt GitHub
-  branch: main                    # branche principale
+  repo: UPEM17/upem-marsais        # dépôt GitHub
+  branch: main                     # branche principale
   commit_messages:
-    create: "🆕 Création {{collection}} : {{slug}}"
-    update: "✏️ Mise à jour {{collection}} : {{slug}}"
-    delete: "🗑️ Suppression {{collection}} : {{slug}}"
-    uploadMedia: "📸 Ajout média : {{path}}"
-    deleteMedia: "🧹 Suppression média : {{path}}"
+    create: "🆕 {{collection}} : {{slug}}"
+    update: "✏️ {{collection}} : {{slug}}"
+    delete: "🗑️ {{collection}} : {{slug}}"
+    uploadMedia: "📸 média : {{path}}"
+    deleteMedia: "🧹 suppr média : {{path}}"
 
-publish_mode: editorial_workflow
+# 👉 Enregistre directement dans main (pas de brouillons cachés)
+publish_mode: simple
 
-media_folder: "public/uploads"    # dossier dans le repo
-public_folder: "/uploads"         # URL publique des médias
+# Medias
+media_folder: "public/uploads"     # chemin dans le repo
+public_folder: "/uploads"          # URL publique
+
+# Format par défaut
+slug:
+  encoding: "ascii"
+  clean_accents: true
 
 collections:
-  # ----------------------------
-  # 📰 ACTUALITÉS
-  # ----------------------------
+  # 📰 ACTUALITÉS -> content/posts
   - name: "actualites"
     label: "Actualités"
-    folder: "data/actualites"
+    folder: "content/posts"
     create: true
+    extension: "md"
+    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image (couverture)", name: "image", widget: "image", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Résumé", name: "summary", widget: "text", required: false }
       - { label: "Contenu", name: "body", widget: "markdown" }
 
-  # ----------------------------
-  # 🎉 ÉVÉNEMENTS
-  # ----------------------------
+  # 🎉 ÉVÉNEMENTS -> content/events
   - name: "evenements"
     label: "Événements"
-    folder: "data/evenements"
+    folder: "content/events"
     create: true
+    extension: "md"
+    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Lieu", name: "lieu", widget: "string", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Description", name: "body", widget: "markdown" }
 
-  # ----------------------------
-  # 🧾 COMPTES-RENDUS
-  # ----------------------------
+  # 🧾 COMPTES-RENDUS -> content/minutes
   - name: "comptes_rendus"
     label: "Comptes rendus"
-    folder: "data/comptes_rendus"
+    folder: "content/minutes"
     create: true
+    extension: "md"
+    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Document (PDF)", name: "fichier", widget: "file", required: false }
-      - { label: "Résumé / Notes", name: "body", widget: "markdown" }
+      - { label: "Résumé / Notes", name: "body", widget: "markdown", required: false }
 
-  # ----------------------------
-  # 📦 COMMANDES
-  # ----------------------------
+  # 📦 COMMANDES -> content/commandes (crée ce dossier si absent)
   - name: "commandes"
     label: "Commandes"
-    folder: "data/commandes"
+    folder: "content/commandes"
     create: true
+    extension: "md"
+    format: "frontmatter"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Nom de la commande", name: "title", widget: "string" }
@@ -80,13 +89,13 @@ collections:
       - { label: "Image / visuel", name: "image", widget: "image", required: false }
       - { label: "Détails", name: "body", widget: "markdown" }
 
-  # ----------------------------
-  # 🖼️ GALERIE
-  # ----------------------------
+  # 🖼️ GALERIE -> content/galerie (crée ce dossier si absent)
   - name: "galerie"
     label: "Galerie"
-    folder: "data/galerie"
+    folder: "content/galerie"
     create: true
+    extension: "md"
+    format: "frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Titre", name: "title", widget: "string" }
