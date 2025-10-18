@@ -1,27 +1,41 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { getMinutes } from '../../lib/content';
+// upem-app/app/comptes-rendus/page.tsx
+import { getCollection } from "@/lib/content";
 
-export const metadata = { title: 'Compte rendu – UPEM' };
+export const dynamic = "force-static"; // page statique à la build
 
-export default function Page(){
-  const list = getMinutes();
+export default function Page() {
+  const minutes = getCollection("minutes");
+
+  if (minutes.length === 0) {
+    return (
+      <main className="container">
+        <h1>Comptes rendus</h1>
+        <p>Aucun compte rendu pour l’instant.</p>
+      </main>
+    );
+  }
+
   return (
-    <div className="grid">
-      {list.map(p=> (
-        <Link href={`/article/${p.slug}/`} key={p.slug} className="card">
-          {p.cover ? (
-            <Image className="thumb" src={p.cover} alt="miniature" width={120} height={90} />
-          ) : <div className="thumb" />}
-          <div>
-            <div className="meta">{new Date(p.date).toLocaleDateString('fr-FR')}</div>
-            <h3>{p.title}</h3>
-            {p.tags?.map(t=> <span className="tag" key={t}>{t}</span>)}
-            <p className="summary">{p.summary}</p>
-          </div>
-        </Link>
-      ))}
-      {!list.length && <div className="notice">Pas de compte rendu publié.</div>}
-    </div>
+    <main className="container">
+      <h1>Comptes rendus</h1>
+      <ul className="list">
+        {minutes.map((m) => (
+          <li key={m.slug} className="card">
+            <div className="meta">
+              {m.date ? <time>{new Date(m.date).toLocaleDateString("fr-FR")}</time> : null}
+            </div>
+            <a href={`/article/${m.slug}`} className="title">
+              {m.title}
+            </a>
+            {m.body ? (
+              <p className="excerpt">
+                {/* on montre juste le début du contenu si présent */}
+                {m.body.slice(0, 140)}…
+              </p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }
