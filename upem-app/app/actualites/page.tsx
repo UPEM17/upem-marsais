@@ -1,32 +1,26 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getPosts } from "../../lib/content";
 
 export const metadata = { title: "Actualités – UPEM" };
 
-export default async function ActualitesPage() {
-  const posts = await getPosts();
-
+export default function Page() {
+  const posts = getPosts();
   return (
     <main className="container">
-      <h1>Actualités</h1>
-      {posts.length === 0 ? (
-        <p>Aucune actualité pour le moment.</p>
-      ) : (
-        <ul style={{ padding: 0, listStyle: "none" }}>
-          {posts.map((p) => (
-            <li key={p.slug} style={{ margin: "14px 0" }}>
-              <Link href={`/article/${p.slug}`} style={{ fontWeight: 700 }}>
-                {p.title}
-              </Link>
-              {p.date && (
-                <span style={{ color: "#6b7280", marginLeft: 8 }}>
-                  {new Date(p.date).toLocaleDateString("fr-FR")}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      {posts.map((p) => (
+        <Link href={`/article/${p.slug}/`} key={p.slug} className="card">
+          {p.cover ? (
+            <Image className="thumb" src={p.cover} alt="miniature" width={120} height={90} />
+          ) : (
+            <div className="thumb" />
+          )}
+          <div>
+            <h3>{p.title}</h3>
+            {p.date && <p style={{ color: "#6b7280", marginTop: 0 }}>{p.date}</p>}
+          </div>
+        </Link>
+      ))}
     </main>
   );
 }
