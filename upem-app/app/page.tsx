@@ -1,20 +1,23 @@
 import Link from "next/link";
-import { getEvents } from "../../lib/content";
+import { getEvents } from "../lib/content";
 
-export const metadata = { title: "Événements – UPEM" };
+export const metadata = { title: "UPEM – Accueil" };
 
-export default async function EvenementsPage() {
-  const events = await getEvents();
+export default async function HomePage() {
+  const events = (await getEvents()).slice(0, 5);
 
   return (
     <main className="container">
-      <h1>Événements</h1>
+      <h1>UPEM</h1>
+      <p>Association de parents d’élèves</p>
+
+      <h2>À venir</h2>
       {events.length === 0 ? (
-        <p>Aucun événement pour le moment.</p>
+        <p>Aucun événement planifié.</p>
       ) : (
         <ul style={{ padding: 0, listStyle: "none" }}>
           {events.map((e) => (
-            <li key={e.slug} style={{ margin: "14px 0" }}>
+            <li key={e.slug} style={{ margin: "12px 0" }}>
               <Link href={`/article/${e.slug}`} style={{ fontWeight: 700 }}>
                 {e.title}
               </Link>
@@ -28,6 +31,10 @@ export default async function EvenementsPage() {
           ))}
         </ul>
       )}
+
+      <p style={{ marginTop: 24 }}>
+        <Link href="/evenements">Tous les événements →</Link>
+      </p>
     </main>
   );
 }
