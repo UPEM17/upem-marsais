@@ -1,14 +1,15 @@
 /**
- * Décap CMS OAuth proxy pour GitHub – Cloudflare Pages Functions
- * Routes: /api/auth/login, /api/auth/callback
+ * Decap CMS OAuth proxy GitHub – Cloudflare Pages Functions
+ * Routes gérées : /api/auth/login  et  /api/auth/callback
  */
-export async function onRequestGet(context) {
+export async function onRequest(context) {
   const url = new URL(context.request.url);
   const { env } = context; // GH_CLIENT_ID, GH_CLIENT_SECRET
   const redirectUri = `${url.origin}/api/auth/callback`;
   const scope = "repo";
 
-  if (url.pathname.endsWith("/login")) {
+  // /api/auth/login
+  if (url.pathname === "/api/auth/login") {
     const auth = new URL("https://github.com/login/oauth/authorize");
     auth.searchParams.set("client_id", env.GH_CLIENT_ID);
     auth.searchParams.set("redirect_uri", redirectUri);
@@ -16,7 +17,8 @@ export async function onRequestGet(context) {
     return Response.redirect(auth.toString(), 302);
   }
 
-  if (url.pathname.endsWith("/callback")) {
+  // /api/auth/callback
+  if (url.pathname === "/api/auth/callback") {
     const code = url.searchParams.get("code");
     if (!code) return new Response("Missing code", { status: 400 });
 
@@ -31,7 +33,7 @@ export async function onRequestGet(context) {
     });
     const tokenJson = await tokenRes.json();
     if (!tokenJson.access_token) {
-      return new Response(JSON.stringify(tokenJson), { status: 400 });
+      return new Response(JSON.stringify(tokenJson), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
     const adminUrl = new URL(`${url.origin}/admin/`);
