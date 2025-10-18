@@ -1,5 +1,5 @@
 # =============================
-# ⚙️ CONFIGURATION DECAP CMS
+# ⚙️ CONFIGURATION DECAP CMS (FR)
 # =============================
 
 locale: fr
@@ -10,19 +10,20 @@ backend:
   name: github
   repo: UPEM17/upem-marsais   # dépôt GitHub
   branch: main                # branche principale
+  # Pas besoin d’OAuth, le login GitHub par token suffit
 
-# ✅ Publication directe sur main (plus de PR / brouillons persistants)
+# ✅ Publication directe sur la branche main (pas de brouillons)
 publish_mode: simple
 
-# Dossiers médias
-media_folder: "public/uploads"   # où les images sont écrites dans le repo
-public_folder: "/uploads"        # URL publique utilisée par le site
+# 📁 Dossiers pour les médias (images, fichiers)
+media_folder: "upem-app/public/uploads"   # emplacement réel dans le dépôt
+public_folder: "/uploads"                 # chemin public visible sur le site
 
 collections:
   # 📰 ACTUALITÉS
-  - name: "posts"
+  - name: "actualites"
     label: "Actualités"
-    folder: "content/posts"
+    folder: "upem-app/content/posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
@@ -32,9 +33,9 @@ collections:
       - { label: "Contenu", name: "body", widget: "markdown" }
 
   # 🎉 ÉVÉNEMENTS
-  - name: "events"
+  - name: "evenements"
     label: "Événements"
-    folder: "content/events"
+    folder: "upem-app/content/events"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
@@ -45,9 +46,9 @@ collections:
       - { label: "Description", name: "body", widget: "markdown" }
 
   # 🧾 COMPTES-RENDUS
-  - name: "minutes"
+  - name: "comptes_rendus"
     label: "Comptes rendus"
-    folder: "content/minutes"
+    folder: "upem-app/content/minutes"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
@@ -59,7 +60,7 @@ collections:
   # 📦 COMMANDES
   - name: "commandes"
     label: "Commandes"
-    folder: "content/commandes"
+    folder: "upem-app/content/commandes"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
@@ -71,7 +72,7 @@ collections:
   # 🖼️ GALERIE
   - name: "galerie"
     label: "Galerie"
-    folder: "content/galerie"
+    folder: "upem-app/content/galerie"
     create: true
     slug: "{{slug}}"
     fields:
@@ -79,3 +80,4 @@ collections:
       - { label: "Date", name: "date", widget: "datetime", required: false }
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Description", name: "body", widget: "markdown", required: false }
+
